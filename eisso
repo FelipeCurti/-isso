@@ -1,0 +1,194 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct arv {
+char info;
+struct arv *pai;
+struct arv *dir;
+struct arv *esq;
+};
+typedef struct arv Arv;
+
+Arv* cria( char raiz ) {
+    // Aloca memoria para o no/arvore
+    Arv* aux = (Arv*)malloc( sizeof( Arv ) );
+    // Armazena a informacao
+    aux->info = raiz;
+
+    // Garante que os ponteiros estejam sem lixo
+    aux->dir = NULL;
+    aux->esq = NULL;
+    aux->pai = NULL;
+
+    // Retorna o ponteiro para este no/arvore
+    return aux;
+}
+
+char info( Arv* a ) {
+    return a->info;
+}
+
+Arv* esquerda( Arv* a ) {
+    // retorna o endereco do filho esquerdo
+    return a->esq;
+}
+
+Arv* direita( Arv* a ) {
+    // retorna o endereco do filho direito
+    return a->dir;
+}
+
+Arv* pai( Arv* a ) { // retorna o endereco do pai
+    return a->pai;
+}
+
+int edireita( Arv* a ){
+    Arv* p = pai( a );
+    // Retorna 1 se o endereco do filho direito do
+    // pai for igual ao endereco do no atual
+    return ( p->dir == a );
+}
+
+int eesquerda( Arv* a ){
+    Arv* p = pai( a );
+    // Retorna 1 se o endereco do filho esquerdo do
+    // pai for igual ao endereco do no atual
+    return ( p->esq == a );
+}
+
+void imprime(Arv *a) {
+if (a != NULL) {
+imprime(a->esq);
+printf("%c\n", a->info);
+imprime(a->dir);
+}
+}
+
+void libera(Arv *a) {
+if (a != NULL) {
+libera(a->esq);
+libera(a->dir);
+free(a);
+}
+}
+ 
+void poeesquerda( Arv* a, char valor ) {
+    // Cria sub-árvore
+    Arv* tmp = cria( valor );
+
+    // Coloca sub-árvore como filho
+    // esquerdo da árvore atual
+    a->esq = tmp;
+
+    // Novo filho aponta para seu pai
+    tmp->pai = a;
+}
+
+void poedireita( Arv* a, char valor ) {
+    // Cria sub-árvore
+    Arv* tmp = cria( valor );
+
+    // Coloca sub-árvore como filho
+    // direito da árvore atual
+    a->dir = tmp;
+
+    // Novo filho aponta para seu pai
+    tmp->pai = a;
+}
+ 
+void poefilhos( Arv* a, char filhoesq, char filhodir ){
+Arv* tmp = cria( filhoesq );
+a->esq = tmp;
+tmp->pai = a;
+Arv* tmp1 = cria( filhodir );
+a->dir = tmp1;
+tmp1->pai = a;
+}
+
+char val_esquerda( Arv* a ){
+if (a != NULL) {
+imprime(a->esq);
+return a->info;
+}
+}
+ 
+ 
+int conta_elementos(Arv *a) {
+int contS=0,contE=0,contD=0;
+
+if (a != NULL) {
+contE = conta_elementos(a->esq);
+contD = conta_elementos(a->dir);
+//contD++;
+contS = contE+contD+1;
+//contD ++;
+}
+
+return contS;
+}
+
+int iguais(Arv *a1, Arv *a2){
+if (a1 == NULL && a2 == NULL) return 1;
+    if (a1 != NULL && a2 == NULL || a2 != NULL && a1 == NULL) return 0;
+    
+    return iguais(a1->esq, a2->esq) && iguais(a1->dir, a2->dir) && info(a1) == info(a2);
+
+}
+
+int e_estrit_binaria(Arv* a){
+	if(a != NULL){
+		if((a->esq == NULL && a->dir != NULL) ||(a->esq != NULL && a->dir == NULL)){
+			return 0;
+		}
+		else{
+			int esq = e_estrit_binaria(a->esq);
+			int dir = e_estrit_binaria(a->dir);
+			if( esq == dir ){
+				return 1;
+			}
+			else{
+				return 0;
+			}
+		}
+	}
+	else{
+		return 1;
+	}
+}
+
+int e_binaria_completa(Arv* a){
+	if(a != NULL){
+		if((a->esq != NULL) && (a->dir != NULL) && (a->esq == NULL) && (a->dir == NULL)){
+		if(e_binaria_completa(a->esq) && e_binaria_completa(a->dir)){
+			return 0;
+		}
+		else{
+		return 1;	
+		}		
+	}
+	else{
+		return 1;
+	}
+}
+}
+
+int main ( void ) {
+Arv* a, *b;
+int rIguais;
+  a = cria('S');
+  poedireita( a, 'X' );
+  poeesquerda( a, 'U' );
+  
+  b = cria('S');
+  poedireita( b, 'X' );
+  poeesquerda( b, 'U' );
+  printf("Quantidade de elementos: %d\n", conta_elementos(a));
+ if(iguais(a,b) == 0){
+ 	printf("Arvores diferentes");
+ }
+ else if(iguais(a,b) == 1){
+ 	printf("Arvores iguais");
+ }
+ return 0;
+}
+ 
